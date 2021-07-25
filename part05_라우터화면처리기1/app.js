@@ -58,6 +58,7 @@ function newsDetail(){
     //hash 값을 구하기위해서 replace 메소드를 속성을 써거 첫번쨰 인자를 두번쨰 인자로 바꾼다.
     const newsContent = getDate(CONTENT_URL.replace('@id', id));
 
+    //문자열 만들기
     container.innerHTML = `
         <h1>${newsContent.title}</h1>
 
@@ -67,6 +68,7 @@ function newsDetail(){
     `;
 }
 
+//라우터 생성 hash 없을때는 newsFeed() 있으면 newDetail();
 function router(){
     const routerPath = location.hash;
 
