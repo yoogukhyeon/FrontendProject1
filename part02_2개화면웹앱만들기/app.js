@@ -3,60 +3,50 @@ const container = document.getElementById('root');
 //서버 통신을 위해서 XMLHttpRequest() 변수 ajax 담는다 
 const ajax = new XMLHttpRequest();
 
-//div 생성
-const Content = document.createElement('div');
-
-//ajax 통신 open , send , response
-//ajx.open('method 방식' , 'api url' , 비동기통신 안한다는뜻입니다)
-ajax.open('GET' , '	https://api.hnpwa.com/v0/news/1.json' , false)
+//div 생성 나중에 지울 코드
+const div = document.createElement('div')
+//URL 변수에 담기
+const NEW_URL = '	https://api.hnpwa.com/v0/news/1.json'; 
+const NEWS_CONTENT = 'https://api.hnpwa.com/v0/item/@id.json';
+ajax.open('GET' , NEW_URL , false)
 ajax.send();
 
-//JOSON 형태로 값을 받는다
 const newsFeed = JSON.parse(ajax.response);
-console.log(newsFeed)
 
 //createElement 생성 
 const ul = document.createElement('ul');
 
-
-//hash event 생성
-//hashchange 이벤트는 같은 페이지 안에서 해시(#)만 바뀌었을 때, 즉 페이지에서 id가 있는 요소로 이동하게 하기위해서 hash를 쓴다 
+//hash 체인지 이벤트함수 만들기
 window.addEventListener('hashchange' , function(){
-    const id = location.hash;
-    console.log('hash 변경됨');
-
-    //hash 값을 구하기위해서 replace 메소드를 속성을 쓴다.
-    ajax.open('GET', 'https://api.hnpwa.com/v0/item/13831370.json', false);
+    //hash 자리에 substr 메소드를 이용해서 특정 문자를 컨트롤! @id에서 start 1번 문자 @ 없애는것
+    const id = location.hash.substr(1);
+    ajax.open('GET' , NEWS_CONTENT.replace('@id' , id) , false);
     ajax.send();
+
     const newsContent = JSON.parse(ajax.response);
 
     const title = document.createElement('h1');
 
     title.innerHTML = newsContent.title;
 
-    Content.appendChild(title);
+    div.appendChild(title)
 
 })
 
-
-
-//for문으로 먼저 10의 title값을 가져오기
 for(let i = 0; i < 10; i++){
     const li = document.createElement('li');
+    //a 태그 만들기
     const a = document.createElement('a');
-    
 
+    //a 속성 값넣고 #뒤에 newsFeed.id 값을 해쉬태그를 이용해서 페이지 이동
     a.href = `#${newsFeed[i].id}`;
-    a.innerHTML = `${newsFeed[i].title} (${newsFeed[i].comments_count})`
-
-
-    // a Element 생성 후 값들을 넣어주고 li appendChild 자식으로 넣어준다
-    // ul태그안에 자식 li 넣는다 appenChild 자식을 넣기위한 메소드
+    a.innerHTML = `${newsFeed[i].title}`;
+    
+    //li엘리먼트에 a를 자식요속로 넣기
     li.appendChild(a);
     ul.appendChild(li);
-
 }
 
-//container 넣음으로 결과 값이 잘나온다!
-container.appendChild(ul);
-container.appendChild(Content);
+
+container.appendChild(ul)
+container.appendChild(div)
