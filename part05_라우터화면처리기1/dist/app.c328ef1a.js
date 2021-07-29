@@ -161,9 +161,11 @@ function newsDetail() {
   var id = location.hash.substr(1);
   console.log('hash 변경됨'); //hash 값을 구하기위해서 replace 메소드를 속성을 써거 첫번쨰 인자를 두번쨰 인자로 바꾼다.
 
-  var newsContent = getDate(CONTENT_URL.replace('@id', id));
+  var newsContent = getDate(CONTENT_URL.replace('@id', id)); //문자열 만들기
+
   container.innerHTML = "\n        <h1>".concat(newsContent.title, "</h1>\n\n        <div>\n            <a href=\"#\">\uBAA9\uB85D\uC73C\uB85C</a>\n        </div>\n    ");
-}
+} //라우터 생성 hash 없을때는 newsFeed() 있으면 newDetail();
+
 
 function router() {
   var routerPath = location.hash;
@@ -207,7 +209,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55822" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60377" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
