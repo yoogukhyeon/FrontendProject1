@@ -118,95 +118,82 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"app.js":[function(require,module,exports) {
-//중복된 코드를 리팩토리 
-//html에서 container 태그를 가져옴
-var container = document.getElementById('root'); //서버 통신을 위해서 XMLHttpRequest() 변수 ajax 담는다 
-
+var container = document.getElementById('root');
 var ajax = new XMLHttpRequest();
+var content = document.createElement('div');
 var NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
-var CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json'; //공유할수있는 변수설정
-
+var CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json';
 var store = {
   currentPage: 1
-}; //중복되는 AJAX 함수를 만들기 바뀌는 부분은 URL 밖에 없기 떄문에 인자로 URL 넣고 호출할떄마다 URL 바꿔준다
+}; //반복코드 getDate함수안에 ajax 코드를 넣고 url바뀔수 있어 인자 값에 url을 줍니다
 
-function getDate(URL) {
-  //ajax 통신 open , send , response
-  //ajx.open('method 방식' , 'api url' , 비동기통신 안한다는뜻입니다)
-  ajax.open('GET', URL, false);
-  ajax.send(); //JOSON 형태로 return 값을 받는다
+function getDate(url) {
+  ajax.open('GET', url, false);
+  ajax.send(); //ajax.response 반환값 return
 
   return JSON.parse(ajax.response);
 }
 
-; //div 생성
+; //ajax getDate 함수를 통해서 불러와서 코드를 줄인다
 
-var Content = document.createElement('div'); //createElement 생성 
+var ul = document.createElement('ul'); //문자열로 html 만들기 되도록 DOM객체에 Element속성을 안쓰고 UI를 구성하는것이 효율적이고 좋음 
+//지금은 연습이라서 코드를 계속 만들어보는것입니다!
+//templat 큰틀을 미리 만들기
+//newfeed
 
-var ul = document.createElement('ul');
-
-function newsFeed() {
+function newsFeeds() {
   var newsFeed = getDate(NEWS_URL);
-  var newsList = []; // 템플렛 큰틀을 만들어서 UI 배치
+  var newsList = []; //ui구현할 템클렛 생성
 
-  var template = "\n        <div class=\"bg-gray-600 min-h-screen\">\n        <div class=\"bg-white text-xl\">\n        <div class=\"mx-auto px-4\">\n            <div class=\"flex justify-between items-center py-6\">\n            <div class=\"flex justify-start\">\n                <h1 class=\"font-extrabold\">Hacker News</h1>\n            </div>\n            <div class=\"items-center justify-end\">\n                <a href=\"#/page/{{__prev_page__}}\" class=\"text-gray-500\">\n                Previous\n                </a>\n                <a href=\"#/page/{{__next_page__}}\" class=\"text-gray-500 ml-4\">\n                Next\n                </a>\n            </div>\n            </div> \n        </div>\n        </div>\n        <div class=\"p-4 text-2xl text-gray-700\">\n        {{__news_feed__}}        \n        </div>\n    </div>\n    "; //for문으로 먼저 10의 title값을 가져오기
-  //문자열로 html 만들기 되도록 DOM객체에 Element속성을 안쓰고 UI를 구성하는것이 효율적이고 좋음
+  var template = "\n      <div class=\"bg-gray-600 min-h-screen\">\n      <div class=\"bg-white text-xl\">\n        <div class=\"mx-auto px-4\">\n          <div class=\"flex justify-between items-center py-6\">\n            <div class=\"flex justify-start\">\n              <h1 class=\"font-extrabold\">Hacker News</h1>\n            </div>\n            <div class=\"items-center justify-end\">\n              <a href=\"#/page/{{__prev_page__}}\" class=\"text-gray-500\">\n                Previous\n              </a>\n              <a href=\"#/page/{{__next_page__}}\" class=\"text-gray-500 ml-4\">\n                Next\n              </a>\n            </div>\n          </div> \n        </div>\n      </div>\n      <div class=\"p-4 text-2xl text-gray-700\">\n        {{__news_feed__}}        \n      </div>\n    </div>\n    ";
 
   for (var i = (store.currentPage - 1) * 10; i < store.currentPage * 10; i++) {
-    newsList.push("\n            <div class=\"p-6 ".concat(newsFeed[i].read ? 'bg-red-500' : 'bg-white', " mt-6 rounded-lg shadow-md transition-colors duration-500 hover:bg-green-100\">\n            <div class=\"flex\">\n            <div class=\"flex-auto\">\n                <a href=\"#/show/").concat(newsFeed[i].id, "\">").concat(newsFeed[i].title, "</a>  \n            </div>\n            <div class=\"text-center text-sm\">\n                <div class=\"w-10 text-white bg-green-300 rounded-lg px-0 py-2\">").concat(newsFeed[i].comments_count, "</div>\n            </div>\n            </div>\n            <div class=\"flex mt-3\">\n            <div class=\"grid grid-cols-3 text-sm text-gray-500\">\n                <div><i class=\"fas fa-user mr-1\"></i>").concat(newsFeed[i].user, "</div>\n                <div><i class=\"fas fa-heart mr-1\"></i>").concat(newsFeed[i].points, "</div>\n                <div><i class=\"far fa-clock mr-1\"></i>").concat(newsFeed[i].time_ago, "</div>\n            </div>  \n            </div>\n        </div>  \n        "));
+    newsList.push("  \n        <div class=\"p-6 bg-white mt-6 rounded-lg shadow-md transition-colors duration-500 hover:bg-green-100\">\n        <div class=\"flex\">\n          <div class=\"flex-auto\">\n            <a href=\"#/show/".concat(newsFeed[i].id, "\">").concat(newsFeed[i].title, "</a>  \n          </div>\n          <div class=\"text-center text-sm\">\n            <div class=\"w-10 text-white bg-green-300 rounded-lg px-0 py-2\">").concat(newsFeed[i].comments_count, "</div>\n          </div>\n        </div>\n        <div class=\"flex mt-3\">\n          <div class=\"grid grid-cols-3 text-sm text-gray-500\">\n            <div><i class=\"fas fa-user mr-1\"></i>").concat(newsFeed[i].user, "</div>\n            <div><i class=\"fas fa-heart mr-1\"></i>").concat(newsFeed[i].points, "</div>\n            <div><i class=\"far fa-clock mr-1\"></i>").concat(newsFeed[i].time_ago, "</div>\n          </div>  \n        </div>\n      </div>    \n        "));
   }
-
-  ; //삼합연산자로 page 1에서 0으로 안되게 했습니다
 
   template = template.replace('{{__news_feed__}}', newsList.join(''));
   template = template.replace('{{__prev_page__}}', store.currentPage > 1 ? store.currentPage - 1 : 1);
-  template = template.replace('{{__next_page__}}', store.currentPage + 1); // join() 메서드는 배열의 모든 요소를 연결해 하나의 문자열로 만듭니다.
-
+  template = template.replace('{{__next_page__}}', store.currentPage + 1);
   container.innerHTML = template;
-}
+} //newsdetail 
+
 
 function newsDetail() {
-  //newsContent API url 보면 @id 부분에 @지우기 위해 substr 썻다
   var id = location.hash.substr(7);
-  console.log('hash 변경됨'); //hash 값을 구하기위해서 replace 메소드를 속성을 써거 첫번쨰 인자를 두번쨰 인자로 바꾼다.
-
   var newsContent = getDate(CONTENT_URL.replace('@id', id));
-  var template = "\n    <div class=\"bg-gray-600 min-h-screen pb-8\">\n    <div class=\"bg-white text-xl\">\n      <div class=\"mx-auto px-4\">\n        <div class=\"flex justify-between items-center py-6\">\n          <div class=\"flex justify-start\">\n            <h1 class=\"font-extrabold\">Hacker News</h1>\n          </div>\n          <div class=\"items-center justify-end\">\n            <a href=\"#/page/".concat(store.currentPage, "\" class=\"text-gray-500\">\n              <i class=\"fa fa-times\"></i>\n            </a>\n          </div>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"h-full border rounded-xl bg-white m-6 p-4 \">\n      <h2>").concat(newsContent.title, "</h2>\n      <div class=\"text-gray-400 h-20\">\n        ").concat(newsContent.content, "\n      </div>\n\n      {{__comments__}}\n\n    </div>\n  </div>\n    "); //댓글 함수
+  var template = "\n        <div class=\"bg-gray-600 min-h-screen pb-8\">\n        <div class=\"bg-white text-xl\">\n          <div class=\"mx-auto px-4\">\n            <div class=\"flex justify-between items-center py-6\">\n              <div class=\"flex justify-start\">\n                <h1 class=\"font-extrabold\">Hacker News</h1>\n              </div>\n              <div class=\"items-center justify-end\">\n                <a href=\"#/page/".concat(store.currentPage, "\" class=\"text-gray-500\">\n                  <i class=\"fa fa-times\"></i>\n                </a>\n              </div>\n            </div>\n          </div>\n        </div>\n  \n        <div class=\"h-full border rounded-xl bg-white m-6 p-4 \">\n          <h2>").concat(newsContent.title, "</h2>\n          <div class=\"text-gray-400 h-20\">\n            ").concat(newsContent.content, "\n          </div>\n  \n          {{__comments__}}\n  \n        </div>\n      </div>\n        "); //댓글 함수 만들기
 
-  function makeComment(comments) {
+  function makeComments(comments) {
     var called = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
     var commentString = [];
 
     for (var i = 0; i < comments.length; i++) {
-      commentString.push("\n            <div style=\"padding-left: ".concat(called * 40, "px;\" class=\"mt-4\">\n            <div class=\"text-gray-400\">\n              <i class=\"fa fa-sort-up mr-2\"></i>\n              <strong>").concat(comments[i].user, "</strong> ").concat(comments[i].time_ago, "\n            </div>\n            <p class=\"text-gray-700\">").concat(comments[i].content, "</p>\n          </div>  \n            "));
+      commentString.push("\n          <div style=\"padding-left: ".concat(called * 40, "40px;\" class=\"mt-4\">\n          <div class=\"text-gray-400\">\n            <i class=\"fa fa-sort-up mr-2\"></i>\n            <strong>").concat(comments[i].user, "</strong> ").concat(comments[i].time_ago, "\n          </div>\n          <p class=\"text-gray-700\">").concat(comments[i].content, "</p>\n        </div>  \n          "));
 
       if (comments[i].comments.length > 0) {
-        commentString.push(makeComment(comments[i].comments, called + 1));
+        commentString.push(makeComments(comments[i].comments, called + 1));
       }
     }
 
     return commentString.join('');
-  } //문자열 만들기
+  }
 
-
-  container.innerHTML = template.replace('{{__comments__}}', makeComment(newsContent.comments));
-} //라우터 생성 hash 없을때는 newsFeed() 있으면 newDetail();
+  container.innerHTML = template.replace('{{__comments__}}', makeComments(newsContent.comments));
+} //router 
 
 
 function router() {
   var routerPath = location.hash;
 
   if (routerPath === "") {
-    newsFeed();
+    newsFeeds();
   } else if (routerPath.indexOf('#/page/') >= 0) {
     store.currentPage = Number(routerPath.substr(7));
-    newsFeed();
+    newsFeeds();
   } else {
     newsDetail();
   }
-} //hash event 생성
-//hashchange 이벤트는 같은 페이지 안에서 해시(#)만 바뀌었을 때, 즉 페이지에서 id가 있는 요소로 이동하게 하기위해서 hash를 쓴다 
-
+}
 
 window.addEventListener('hashchange', router);
 router();
@@ -238,7 +225,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49471" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55030" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
