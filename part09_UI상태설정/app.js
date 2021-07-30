@@ -25,23 +25,22 @@ function getDate(URL){
  
 };
 
-function makeFeeds(feeds){
-    for(let i = 0; i < feeds.length; i++){
-      feeds[i].read = false;
-    }
-    return feeds;
-};
-
 //div 생성
 const Content = document.createElement('div');
 
 //createElement 생성 
 const ul = document.createElement('ul');
 
+function makeComments(feeds){
+    for(let i = 0; i < feeds.length; i++){
+      feeds[i].length = false;
+    }
+    return feeds
+}
 
 function newsFeed(){
     let newsFeed = store.feeds;
-
+  
     const newsList = [];
 
     // 템플렛 큰틀을 만들어서 UI 배치
@@ -51,7 +50,7 @@ function newsFeed(){
         <div class="mx-auto px-4">
             <div class="flex justify-between items-center py-6">
             <div class="flex justify-start">
-                <h1 class="font-extrabold">Hacker News</h1>
+                <h1 class="font-extrabold"><a href="/">Hacker News</a></h1>
             </div>
             <div class="items-center justify-end">
                 <a href="#/page/{{__prev_page__}}" class="text-gray-500">
@@ -71,10 +70,8 @@ function newsFeed(){
     `;
 
     if(newsFeed.length === 0){
-      newsFeed = store.feeds = makeFeeds(getDate(NEWS_URL))
+      newsFeed = store.feeds = makeComments(getDate(NEWS_URL));
     }
-
-   
 
     //for문으로 먼저 10의 title값을 가져오기
     //문자열로 html 만들기 되도록 DOM객체에 Element속성을 안쓰고 UI를 구성하는것이 효율적이고 좋음
@@ -124,7 +121,7 @@ function newsDetail(){
       <div class="mx-auto px-4">
         <div class="flex justify-between items-center py-6">
           <div class="flex justify-start">
-            <h1 class="font-extrabold">Hacker News</h1>
+            <h1 class="font-extrabold"><a href="/">Hacker News</a></h1>
           </div>
           <div class="items-center justify-end">
             <a href="#/page/${store.currentPage}" class="text-gray-500">
@@ -149,8 +146,8 @@ function newsDetail(){
 
     for(let i = 0; i < store.feeds.length; i++){
       if(store.feeds[i].id === Number(id)){
-        store.feeds[i].read = true;
-        break;
+          store.feeds[i].read = true;
+          break
       }
     }
 

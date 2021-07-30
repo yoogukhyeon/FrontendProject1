@@ -140,30 +140,28 @@ function getDate(URL) {
   return JSON.parse(ajax.response);
 }
 
-;
-
-function makeFeeds(feeds) {
-  for (var i = 0; i < feeds.length; i++) {
-    feeds[i].read = false;
-  }
-
-  return feeds;
-}
-
 ; //div 생성
 
 var Content = document.createElement('div'); //createElement 생성 
 
 var ul = document.createElement('ul');
 
+function makeComments(feeds) {
+  for (var i = 0; i < feeds.length; i++) {
+    feeds[i].length = false;
+  }
+
+  return feeds;
+}
+
 function newsFeed() {
   var newsFeed = store.feeds;
   var newsList = []; // 템플렛 큰틀을 만들어서 UI 배치
 
-  var template = "\n        <div class=\"bg-gray-600 min-h-screen\">\n        <div class=\"bg-white text-xl\">\n        <div class=\"mx-auto px-4\">\n            <div class=\"flex justify-between items-center py-6\">\n            <div class=\"flex justify-start\">\n                <h1 class=\"font-extrabold\">Hacker News</h1>\n            </div>\n            <div class=\"items-center justify-end\">\n                <a href=\"#/page/{{__prev_page__}}\" class=\"text-gray-500\">\n                Previous\n                </a>\n                <a href=\"#/page/{{__next_page__}}\" class=\"text-gray-500 ml-4\">\n                Next\n                </a>\n            </div>\n            </div> \n        </div>\n        </div>\n        <div class=\"p-4 text-2xl text-gray-700\">\n        {{__news_feed__}}        \n        </div>\n    </div>\n    ";
+  var template = "\n        <div class=\"bg-gray-600 min-h-screen\">\n        <div class=\"bg-white text-xl\">\n        <div class=\"mx-auto px-4\">\n            <div class=\"flex justify-between items-center py-6\">\n            <div class=\"flex justify-start\">\n                <h1 class=\"font-extrabold\"><a href=\"/\">Hacker News</a></h1>\n            </div>\n            <div class=\"items-center justify-end\">\n                <a href=\"#/page/{{__prev_page__}}\" class=\"text-gray-500\">\n                Previous\n                </a>\n                <a href=\"#/page/{{__next_page__}}\" class=\"text-gray-500 ml-4\">\n                Next\n                </a>\n            </div>\n            </div> \n        </div>\n        </div>\n        <div class=\"p-4 text-2xl text-gray-700\">\n        {{__news_feed__}}        \n        </div>\n    </div>\n    ";
 
   if (newsFeed.length === 0) {
-    newsFeed = store.feeds = makeFeeds(getDate(NEWS_URL));
+    newsFeed = store.feeds = makeComments(getDate(NEWS_URL));
   } //for문으로 먼저 10의 title값을 가져오기
   //문자열로 html 만들기 되도록 DOM객체에 Element속성을 안쓰고 UI를 구성하는것이 효율적이고 좋음
 
@@ -187,7 +185,7 @@ function newsDetail() {
   console.log('hash 변경됨'); //hash 값을 구하기위해서 replace 메소드를 속성을 써거 첫번쨰 인자를 두번쨰 인자로 바꾼다.
 
   var newsContent = getDate(CONTENT_URL.replace('@id', id));
-  var template = "\n    <div class=\"bg-gray-600 min-h-screen pb-8\">\n    <div class=\"bg-white text-xl\">\n      <div class=\"mx-auto px-4\">\n        <div class=\"flex justify-between items-center py-6\">\n          <div class=\"flex justify-start\">\n            <h1 class=\"font-extrabold\">Hacker News</h1>\n          </div>\n          <div class=\"items-center justify-end\">\n            <a href=\"#/page/".concat(store.currentPage, "\" class=\"text-gray-500\">\n              <i class=\"fa fa-times\"></i>\n            </a>\n          </div>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"h-full border rounded-xl bg-white m-6 p-4 \">\n      <h2>").concat(newsContent.title, "</h2>\n      <div class=\"text-gray-400 h-20\">\n        ").concat(newsContent.content, "\n      </div>\n\n      {{__comments__}}\n\n    </div>\n  </div>\n    ");
+  var template = "\n    <div class=\"bg-gray-600 min-h-screen pb-8\">\n    <div class=\"bg-white text-xl\">\n      <div class=\"mx-auto px-4\">\n        <div class=\"flex justify-between items-center py-6\">\n          <div class=\"flex justify-start\">\n            <h1 class=\"font-extrabold\"><a href=\"/\">Hacker News</a></h1>\n          </div>\n          <div class=\"items-center justify-end\">\n            <a href=\"#/page/".concat(store.currentPage, "\" class=\"text-gray-500\">\n              <i class=\"fa fa-times\"></i>\n            </a>\n          </div>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"h-full border rounded-xl bg-white m-6 p-4 \">\n      <h2>").concat(newsContent.title, "</h2>\n      <div class=\"text-gray-400 h-20\">\n        ").concat(newsContent.content, "\n      </div>\n\n      {{__comments__}}\n\n    </div>\n  </div>\n    ");
 
   for (var i = 0; i < store.feeds.length; i++) {
     if (store.feeds[i].id === Number(id)) {
@@ -262,7 +260,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59730" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61015" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
